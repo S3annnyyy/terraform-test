@@ -11,4 +11,4 @@ resource "aws_instance" "app_server" {
   tags = {
     Name = "${var.student_id}-Ex1-EC2-Instance"
   }
-}
+}       
