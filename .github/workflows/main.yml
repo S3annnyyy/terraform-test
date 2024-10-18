@@ -1,4 +1,4 @@
-name: "Terraform Remote Backend"
+name: "terraform remote backend"
 on:
   push:
     branches:
@@ -6,6 +6,8 @@ on:
     paths:
         - 'section2/terraform/**'
   pull_request:
+    paths:
+        - 'section2/terraform/**'
 permissions:
   id-token: write # This is required for aws oidc connection
   contents: read # This is required for actions/checkout
@@ -13,6 +15,7 @@ permissions:
 env:
   TF_LOG: INFO
   AWS_REGION: ${{ secrets.AWS_REGION }}
+  TF_VAR_STUDENT_ID: ${{ secrets.STUDENT_ID }} # by specifying this variable, we can use it in the terraform code
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,7 +23,6 @@ jobs:
       run:
         shell: bash
         working-directory: ./section2/terraform
-        # your working directory with your terraform files
     steps:
       - name: Git checkout
         uses: actions/checkout@v4
@@ -28,23 +30,18 @@ jobs:
       - name: Configure AWS credentials from AWS account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-	with:
-          terraform_version: 1.2.5
 
-	# checks if terraform files are formatted properly, but even if this fails,
-	# the workflow still continues due to continue-on-error: true
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
 
-	# initialise terraform on your repository and configure the remote backend
       - name: Terraform Init
         id: init
         env:
@@ -57,12 +54,10 @@ jobs:
             -backend-config="region=${AWS_REGION}" \
             -backend-config="dynamodb_table=${AWS_DYNAMODB_TABLE}"
 
-	# ensure that the configurations are error-free
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
 
-	# shows what changes will be made if you run 'terraform apply'
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
@@ -70,8 +65,6 @@ jobs:
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
-	# utilises GitHub API to comment on the pull request, displaying the results
-	# of terraform init, validate and plan
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
