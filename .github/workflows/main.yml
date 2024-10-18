@@ -35,14 +35,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-			# checks if terraform files are formatted properly, but even if this fails,
-			# the workflow still continues due to continue-on-error: true
+	# checks if terraform files are formatted properly, but even if this fails,
+	# the workflow still continues due to continue-on-error: true
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
 
-			# initialise terraform on your repository and configure the remote backend
+	# initialise terraform on your repository and configure the remote backend
       - name: Terraform Init
         id: init
         env:
@@ -55,12 +55,12 @@ jobs:
             -backend-config="region=${AWS_REGION}" \
             -backend-config="dynamodb_table=${AWS_DYNAMODB_TABLE}"
 
-			# ensure that the configurations are error-free
+	# ensure that the configurations are error-free
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
 
-			# shows what changes will be made if you run 'terraform apply'
+	# shows what changes will be made if you run 'terraform apply'
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
@@ -68,8 +68,8 @@ jobs:
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
-			# utilises GitHub API to comment on the pull request, displaying the results
-			# of terraform init, validate and plan
+	# utilises GitHub API to comment on the pull request, displaying the results
+	# of terraform init, validate and plan
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
