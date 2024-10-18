@@ -13,5 +13,5 @@ variable "tf_workshop_ex1_subnet_id" {
 # This value is taken from the pipeline environment variables
 variable "student_id" {
   type        = string
-  description = "Student ID"
+  description = "student-46"
 }
