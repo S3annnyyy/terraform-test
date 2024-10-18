@@ -6,7 +6,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-  required_version = ">= 1.2.0" # sets terraform CLI version
+  required_version = ">= 1.2.0" # sets terraform CLI version iawdjioadjaiojdasioasdj
 }
 
 # Configure the AWS Provider
