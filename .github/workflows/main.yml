@@ -34,6 +34,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+	with:
+          terraform_version: 1.2.5
 
 	# checks if terraform files are formatted properly, but even if this fails,
 	# the workflow still continues due to continue-on-error: true
